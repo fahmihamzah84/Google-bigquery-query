@@ -1,0 +1,14 @@
+WITH cleaned AS(
+  SELECT CAST(date AS DATE FORMAT 'YYYYMMDD')AS tanggal,
+         geoNetwork_country AS country,
+         channelGrouping,
+         SUM(totals_transactions) AS total
+  FROM `data-to-insights.ecommerce.rev_transactions`
+  GROUP BY tanggal, country,channelGrouping
+)
+SELECT tanggal,
+       ARRAY_AGG(STRUCT(country,channelGrouping, total)
+                 ORDER BY tanggal, country ASC)
+FROM cleaned
+GROUP BY tanggal
+ORDER BY tanggal ASC
